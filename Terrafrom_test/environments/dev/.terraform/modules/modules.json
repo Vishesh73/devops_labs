@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"kv","Source":"../../modules/azurerm_key_vault","Dir":"../../modules/azurerm_key_vault"},{"Key":"storage","Source":"../../modules/azurerm_storage_account","Dir":"../../modules/azurerm_storage_account"}]}

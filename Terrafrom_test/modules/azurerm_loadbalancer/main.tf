@@ -27,24 +27,24 @@ resource "azurerm_lb_backend_address_pool" "netflixpool" {
 
 
 data "azurerm_network_interface" "vm1nic" {
-  name                = "dhondhuvm-nic"
+  name                = "vm-nic"
   resource_group_name = var.rg_name
 }
 
 data "azurerm_network_interface" "vm2nic" {
-  name                = "tonduvm-nic"
+  name                = "vm-nic"
   resource_group_name = var.rg_name
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "vm1assoc" {
   network_interface_id    = data.azurerm_network_interface.vm1nic.id
-  ip_configuration_name   = "dhondhuips"
+  ip_configuration_name   = "ips"
   backend_address_pool_id = azurerm_lb_backend_address_pool.netflixpool.id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "vm2assoc" {
   network_interface_id    = data.azurerm_network_interface.vm2nic.id
-  ip_configuration_name   = "dhondhuips"
+  ip_configuration_name   = "ips"
   backend_address_pool_id = azurerm_lb_backend_address_pool.netflixpool.id
 }
 
