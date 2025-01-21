@@ -1,38 +1,72 @@
-resource "azurerm_public_ip" "pip" {
-  name                = "zelectric-vm-pip"
-  resource_group_name = "rg-zelectric"
-  location            = "westeurope"
-  allocation_method   = "Static"
+
+
+module "storage" {
+  source = "../../modules/azurerm_storage_account"
+ storage_account_details = var.storage_account_details
 }
 
-data "azurerm_subnet" "frontend_subnet" {
-  name                 = "frontend-subnet"
-  virtual_network_name = "vnet-zelectric"
-  resource_group_name  = "rg-dev-zelectric"
+
+module "kv" {
+  source = "../../modules/azurerm_key_vault"
+  key_vaults = var.key_vaults
+  
+}
+
+
+resource "azurerm_public_ip" "pip" {
+  for_each = var.linux_vm
+  name                = each.value.pip_name
+  resource_group_name = each.value.resource_group_name
+  location            = each.value.location
+  allocation_method   = each.value.allocation_method
+}
+
+resource "azurerm_virtual_network" "vnet1" {
+  for_each = var.linux_vm
+  name                = each.value.virtual_network_name
+  address_space       = each.value.address_space
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+}
+
+resource "azurerm_subnet" "frontend_subnet" {
+  for_each = var.linux_vm
+  depends_on = [ azurerm_virtual_network.vnet1 ]
+  name                 =  each.value.subnet_name
+  resource_group_name  = each.value.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet1.name
+  address_prefixes     = each.value.address_prefixes
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = "zelectricvm-nic"
-  location            = "westeurope"
-  resource_group_name = "rg-zelectric"
+  for_each = var.linux_vm
+  name                = each.value.nic_name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
 
   ip_configuration {
-    name                          = "dhondhuips"
-    subnet_id                     = data.azurerm_subnet.frontend_subnet.id
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.frontend_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.pip.id
   }
 }
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                            = "zelectricvm"
-  resource_group_name             = "rg-zelectric"
-  location                        = "westeurope"
-  size                            = "Standard_F2"
-  admin_username                  = "devopsadmin"
-  admin_password                  = "P@ssw01rd@123"
+resource "azurerm_linux_virtual_machine" "frontend_vm" {
+  for_each = var.linux_vm
+  name                            = each.value.vm_name
+  resource_group_name             = each.value.resource_group_name
+  location                        = each.value.location
+  size                            = each.value.vm_size
+  admin_username                  = each.value.admin_username
+  # admin_password                  = "P@ssw01rd@123"
   disable_password_authentication = false
   network_interface_ids           = [azurerm_network_interface.nic.id]
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
 
   os_disk {
     caching              = "ReadWrite"
