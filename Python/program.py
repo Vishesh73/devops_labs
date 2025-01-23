@@ -643,15 +643,23 @@
 
 # random password
 
-import random
-import string
+# import random
+# import string
 
-password_len = 12
+# password_len = 12
 
-value = string.ascii_letters + string.digits + string.punctuation
+# value = string.ascii_letters + string.digits + string.punctuation
 
-password = " "
-for i in range(password_len):
-    password += random.choice(value)
+# password = " "
+# for i in range(password_len):
+#     password += random.choice(value)
 
-print("hello user your password is", password)
+# print("hello user your password is", password)
+
+
+
+
+
+
+
+
