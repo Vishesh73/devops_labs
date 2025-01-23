@@ -12,6 +12,10 @@ module "kv" {
   
 }
 
+module "vnet" {
+  source = "../../modules/azurerm_virtual_network"
+  vnet_details = var.vnet_details
+}
 
 resource "azurerm_public_ip" "pip" {
   for_each = var.linux_vm
@@ -21,13 +25,13 @@ resource "azurerm_public_ip" "pip" {
   allocation_method   = each.value.allocation_method
 }
 
-resource "azurerm_virtual_network" "vnet1" {
-  for_each = var.linux_vm
-  name                = each.value.virtual_network_name
-  address_space       = each.value.address_space
-  location            = each.value.location
-  resource_group_name = each.value.resource_group_name
-}
+# resource "azurerm_virtual_network" "vnet1" {
+#   for_each = var.linux_vm
+#   name                = each.value.virtual_network_name
+#   address_space       = each.value.address_space
+#   location            = each.value.location
+#   resource_group_name = each.value.resource_group_name
+# }
 
 resource "azurerm_subnet" "frontend_subnet" {
   for_each = var.linux_vm
