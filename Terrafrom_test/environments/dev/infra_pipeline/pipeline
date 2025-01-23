@@ -1,0 +1,59 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: build
+    displayName: Build Job
+    jobs:
+      - job: buildjob1
+        displayName: Build Job 1
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "This is Build Job 1"
+      - job: buildjob2
+        displayName: Build Job 2
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "This is Build Job 2"
+
+  - stage: test
+    displayName: Test
+    dependsOn: build 
+    jobs:
+      - job: testjob
+        displayName: Test Job
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "This is Test Job"
+
+  - stage: manualValidation
+    displayName: Manual Validation
+    dependsOn: test
+    jobs:
+      - job: manualApproval
+        displayName: Manual Approval
+        pool: server
+        steps:
+          - task: ManualValidation@0
+            inputs:
+              notifyUsers: 'user@test.com'
+              instructions: 'Please check and approve to proceed with the next steps.'
+              timeoutInMinutes: 60
+  - stage: deploy
+    displayName: Deploy
+    dependsOn: manualValidation
+    jobs:
+      - job: deployjob
+        displayName: Deploy Job
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "This is the Deploy Job"
