@@ -10,6 +10,11 @@ variable "key_vaults" {
   type = map(any)
 }
 
+variable "vnet_details" {
+  type = map(any)
+}
+
+
 # Variables with Correct Data Types
 
 # variable "resource_group_name" {
