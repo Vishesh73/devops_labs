@@ -29,6 +29,10 @@ Create a virtual environment to manage dependencies:
 ```bash
 python -m venv calculator-env
 
+pip install build
+python -m build
+
+
 #Running the Calculator Script
 
 Once you've set up your environment, navigate to the folder containing the calculator.py script and run the following command in your terminal:
