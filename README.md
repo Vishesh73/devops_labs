@@ -34,6 +34,11 @@ To package your code into a standalone executable, you can use PyInstaller.
 pip install pyinstaller
 pyinstaller --onefile bank_account.py
 
+# Build artifact
+This will generate a dist/ directory with .tar.gz and .whl files that you can upload to PyPI or distribute.
+pip install build
+python -m build
+
 # 5. Run the script
 Test the script by running it from the command line:
 python bank.py
